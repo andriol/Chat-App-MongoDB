@@ -1,0 +1,32 @@
+$smartphone-breakpoint: 767px;
+$tablet-breakpoint_min: 768px;
+$desktop-breakpoint: 1280px;
+
+@mixin Flex($flexDirection, $alignitems, $justifyContent) {
+  display: flex;
+  flex-direction: $flexDirection;
+  align-items: $alignitems;
+  justify-content: $justifyContent;
+}
+@mixin typeKit($fontSize, $fontWeight, $lineHeight, $color, $backgroundColor) {
+  font-size: $fontSize;
+  font-weight: $fontWeight;
+  line-height: $lineHeight;
+  color: $color;
+  background-color: $backgroundColor;
+}
+@mixin smartphone() {
+  @media screen and (max-width: $smartphone-breakpoint) {
+    @content;
+  }
+}
+@mixin tablet() {
+  @media screen and (min-width: $tablet-breakpoint_min) {
+    @content;
+  }
+}
+@mixin desktop() {
+  @media screen and (min-width: $desktop-breakpoint) {
+    @content;
+  }
+}
