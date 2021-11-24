@@ -207,7 +207,7 @@ const Login = () => {
           </div>
         </div>
       )}
-      {isLoggedIn && <Chat />}
+      {isLoggedIn && <Chat room={room} />}
     </div>
   );
 };

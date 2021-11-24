@@ -4,7 +4,8 @@ import ReactScrollableFeed from "react-scrollable-feed";
 import "./chat.scss";
 let socket;
 const CONNECTION = "localhost:8080/";
-function Chat() {
+const Chat = ({ props }) => {
+  console.log(props);
   console.log();
   const [isLoggedIn, setIsloggedIn] = useState(false);
   const [room, setRoom] = useState("");
@@ -13,21 +14,21 @@ function Chat() {
   const [messageList, setMessageList] = useState([]);
   const [userInfo, setUserInfo] = useState({});
   const [messages, setMessages] = useState([]);
-  console.log(userInfo.username);
+
+  console.log(userInfo.room);
   useEffect(() => {
     socket = io(CONNECTION);
   }, [CONNECTION]);
 
   useEffect(() => {
     socket.on("receive_message", (data) => {
-      console.log(data);
       setMessageList([...messageList, data]);
     });
-  });
+  }, []);
 
   const roomConnection = () => {
     setIsloggedIn(true);
-    socket.emit("join", room);
+    socket.emit("join", userInfo.room);
   };
   const sendMessage = async () => {
     let messageContent = {
@@ -50,12 +51,13 @@ function Chat() {
   const getMessage = async () => {
     const response = await fetch("http://localhost:8080/message");
     const messages = await response.json();
-    console.log(messages);
+
     setMessages(messages);
   };
   useEffect(() => {
     getMessage();
   }, []);
+  // get user's profile
   const authToken = sessionStorage.getItem("authToken");
 
   const reqOptions = {
@@ -81,36 +83,33 @@ function Chat() {
     <div className="App">
       {!isLoggedIn ? (
         <div className="logIn">
-          <div className="inputs">
-            <input
-              type="text"
-              placeholder="Name..."
-              onChange={(e) => {
-                setUsername(e.target.value);
-              }}
-            />
-            <input
-              type="text"
-              placeholder="Room..."
-              onChange={(e) => {
-                setRoom(e.target.value);
-              }}
-            />
-          </div>
+          <div className="inputs"></div>
           <button onClick={roomConnection}>Enter Chat</button>
         </div>
       ) : (
         <div className="chatContainer">
           <ReactScrollableFeed>
             <div className="messages">
-              {messageList.map((val, key) => {
-                console.log(val);
+              {messages.map((msg) => {
+                console.log(msg);
+                return (
+                  <div
+                    className="messageContainer"
+                    id={msg.username == userInfo.username ? "You" : "Other"}
+                  >
+                    <div className="messageIndividual" key={msg.id}>
+                      {msg.username}: {msg.message}
+                    </div>
+                  </div>
+                );
+              })}
+              {messageList.map((val) => {
                 return (
                   <div
                     className="messageContainer"
                     id={val.username == userInfo.username ? "You" : "Other"}
                   >
-                    <div className="messageIndividual">
+                    <div className="messageIndividual" key={val.id}>
                       {val.username}: {val.message}
                     </div>
                   </div>
@@ -132,5 +131,5 @@ function Chat() {
       )}
     </div>
   );
-}
+};
 export default Chat;
